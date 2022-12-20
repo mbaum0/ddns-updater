@@ -3,6 +3,7 @@ import ipaddress
 from os import path
 import logging
 from os import environ
+from dotenv import load_dotenv
 
 IP_API_URL = "https://api.ipify.org?format=json"
 NAMECHEAP_DDNS_URL = "https://dynamicdns.park-your-domain.com/update"
@@ -10,8 +11,8 @@ NAMECHEAP_DDNS_URL = "https://dynamicdns.park-your-domain.com/update"
 DDNS_NAMECHEAP_PASSWORD = None
 DDNS_DOMAIN = None
 DDNS_HOST = None
-LAST_IP_FILE = "/var/update/.lastip"
-LOG_FILE = "/var/update/out.log"
+LAST_IP_FILE = "./.lastip"
+LOG_FILE = "./out.log"
 
 logging.basicConfig(filename=LOG_FILE, encoding='utf-8', level=logging.DEBUG)
 
@@ -63,24 +64,30 @@ def update_ip(sub_domain, domain, password, new_ip):
             "Failed to update ip on remote. Status code: %u", resp.status_code)
         return False
 
+
 def load_envvars():
     global DDNS_NAMECHEAP_PASSWORD
     global DDNS_DOMAIN
     global DDNS_HOST
 
+    load_dotenv()  # take environment variables from .env.
     DDNS_NAMECHEAP_PASSWORD = environ.get("DDNS_NAMECHEAP_PASSWORD")
     DDNS_DOMAIN = environ.get("DDNS_DOMAIN")
     DDNS_HOST = environ.get("DDNS_HOST")
 
     if DDNS_NAMECHEAP_PASSWORD == None:
-        logging.error("DDNS_NAMECHEAP_PASSWORD is not set. Please add it to your .env to continue")
+        logging.error(
+            "DDNS_NAMECHEAP_PASSWORD is not set. Please add it to your .env to continue")
     elif DDNS_DOMAIN == None:
-        logging.error("DDNS_DOMAIN is not set. Please add it to your .env to continue")
+        logging.error(
+            "DDNS_DOMAIN is not set. Please add it to your .env to continue")
     elif DDNS_HOST == None:
-        logging.error("DDNS_HOST is not set. Please add it to your .env to continue")
+        logging.error(
+            "DDNS_HOST is not set. Please add it to your .env to continue")
     else:
         return True
     return False
+
 
 def main():
     if not load_envvars():
