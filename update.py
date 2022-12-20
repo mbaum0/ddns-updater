@@ -11,10 +11,12 @@ NAMECHEAP_DDNS_URL = "https://dynamicdns.park-your-domain.com/update"
 DDNS_NAMECHEAP_PASSWORD = None
 DDNS_DOMAIN = None
 DDNS_HOST = None
-LAST_IP_FILE = "./.lastip"
-LOG_FILE = "./out.log"
+LAST_IP_FILE = ".lastip"
+LOG_FILE = "out.log"
 
-logging.basicConfig(filename=LOG_FILE, encoding='utf-8', level=logging.DEBUG)
+log_format = "%(asctime)s::%(levelname)s::%(name)s::%(filename)s::%(lineno)d::%(message)s"
+logging.basicConfig(filename=LOG_FILE, encoding='utf-8',
+                    level=logging.DEBUG, format=log_format)
 
 
 def is_valid_ip_address(ip_str):
