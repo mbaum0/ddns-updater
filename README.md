@@ -9,5 +9,6 @@ ddns-updater will fetch your public IP using ipify's api service. It will then d
 DDNS_NAMECHEAP_PASSWORD={namecheap ddns password here}
 DDNS_DOMAIN={your domain name, e.g. example.com}
 DDNS_HOST={your host name, e.g. www}
+MONITOR_URL={optional http endpoint for heartbeat}
 ```
 2. Run `python update.py`
