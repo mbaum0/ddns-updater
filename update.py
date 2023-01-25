@@ -10,7 +10,7 @@ NAMECHEAP_DDNS_URL = "https://dynamicdns.park-your-domain.com/update"
 
 DDNS_NAMECHEAP_PASSWORD = None
 DDNS_DOMAIN = None
-DDNS_HOST = None
+DDNS_HOSTS = None
 MONITOR_URL = None
 LAST_IP_FILE = ".lastip"
 LOG_FILE = "out.log"
@@ -76,14 +76,17 @@ def monitor_post():
 def load_envvars():
     global DDNS_NAMECHEAP_PASSWORD
     global DDNS_DOMAIN
-    global DDNS_HOST
+    global DDNS_HOSTS
     global MONITOR_URL
 
     load_dotenv()  # take environment variables from .env.
     DDNS_NAMECHEAP_PASSWORD = environ.get("DDNS_NAMECHEAP_PASSWORD")
     DDNS_DOMAIN = environ.get("DDNS_DOMAIN")
-    DDNS_HOST = environ.get("DDNS_HOST")
+    DDNS_HOSTS = environ.get("DDNS_HOSTS")
     MONITOR_URL = environ.get("MONITOR_URL")
+
+    if DDNS_HOSTS is not None:
+        DDNS_HOSTS = DDNS_HOSTS.split(" ")
 
     if DDNS_NAMECHEAP_PASSWORD == None:
         logging.error(
@@ -91,9 +94,9 @@ def load_envvars():
     elif DDNS_DOMAIN == None:
         logging.error(
             "DDNS_DOMAIN is not set. Please add it to your .env to continue")
-    elif DDNS_HOST == None:
+    elif DDNS_HOSTS == None:
         logging.error(
-            "DDNS_HOST is not set. Please add it to your .env to continue")
+            "DDNS_HOSTS is not set. Please add it to your .env to continue")
     else:
         return True
     return False
@@ -108,8 +111,9 @@ def main():
         logging.info("Current ip matches existing ip. Not updating.")
         monitor_post()
     else:
-        success = update_ip(DDNS_HOST, DDNS_DOMAIN,
-                            DDNS_NAMECHEAP_PASSWORD, new_ip)
+        for host in DDNS_HOSTS:
+            success = update_ip(host, DDNS_DOMAIN,
+                                DDNS_NAMECHEAP_PASSWORD, new_ip)
         if success:
             monitor_post()
             write_ip_to_file(new_ip)
